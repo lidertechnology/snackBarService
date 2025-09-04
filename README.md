@@ -12,3 +12,7 @@ Servicio para manejar las notificaciones en componentes de lidertech.
       background-color: #f44336; /* Rojo */
       color: white;
     }
+    .snackbar-notifications {
+      background-color: #2196F3; /* Azul */
+      color: white;
+    }
