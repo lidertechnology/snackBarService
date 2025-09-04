@@ -6,7 +6,7 @@ import { MatSnackBar, MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnack
   providedIn: 'root',
 })
 export class SnackBarService {
-  private readonly snackBar = inject(MatSnackBar);
+   private readonly snackBar = inject(MatSnackBar);
 
   public mostrarMensaje(
     mensaje: string,
@@ -15,6 +15,7 @@ export class SnackBarService {
       duracion?: number;
       posicionHorizontal?: MatSnackBarHorizontalPosition;
       posicionVertical?: MatSnackBarVerticalPosition;
+      enlace?: string;
     }
   ): void {
     const defaultConfig: MatSnackBarConfig = {
@@ -23,8 +24,12 @@ export class SnackBarService {
       horizontalPosition: config?.posicionHorizontal || 'center',
       verticalPosition: config?.posicionVertical || 'bottom',
     };
-    
-    this.snackBar.open(mensaje, 'Cerrar', defaultConfig);
+
+    if (config?.enlace) {
+      this.snackBar.open(mensaje, 'Ver promoción', defaultConfig);
+    } else {
+      this.snackBar.open(mensaje, 'Cerrar', defaultConfig);
+    }
   }
 
   private obtenerClasePorTipo(tipo: 'exito' | 'error' | 'info'): string[] {
