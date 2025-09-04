@@ -91,3 +91,81 @@ TypeScript
       posicionVertical: 'bottom',
       posicionHorizontal: 'center'
     });
+
+
+
+    No deberías reemplazar el botón de cierre por un enlace, ya que eso rompería la consistencia. Un botón de SnackBar siempre debe ser para una acción relacionada con la notificación, como cerrarla o revertir una acción.
+
+Para manejar un enlace, la forma correcta es usar el tercer argumento de open(), el cual acepta un enlace.
+
+Manejo de Enlaces en el SnackBar
+Para notificaciones promocionales, en lugar de usar el botón de acción para cerrar, debes usar un tercer argumento en el método open() que le pase el enlace directamente.
+
+Así puedes mantener la acción de "cerrar" y, a la vez, ofrecer un enlace para que el usuario pueda ver la promoción.
+
+Solución en el Servicio
+Para hacerlo de manera genérica, modifica tu SnackBarService para que el método mostrarMensaje acepte un string para el enlace, de manera opcional.
+
+TypeScript
+
+// src/app/lidertech-lib-central/services/snack-bar.service.ts
+import { Injectable, inject } from '@angular/core';
+import { MatSnackBar, MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class SnackBarService {
+  private readonly snackBar = inject(MatSnackBar);
+
+  public mostrarMensaje(
+    mensaje: string,
+    tipo: 'exito' | 'error' | 'info' = 'info',
+    config?: {
+      duracion?: number;
+      posicionHorizontal?: MatSnackBarHorizontalPosition;
+      posicionVertical?: MatSnackBarVerticalPosition;
+      enlace?: string;
+    }
+  ): void {
+    const defaultConfig: MatSnackBarConfig = {
+      duration: config?.duracion || 3000,
+      panelClass: this.obtenerClasePorTipo(tipo),
+      horizontalPosition: config?.posicionHorizontal || 'center',
+      verticalPosition: config?.posicionVertical || 'bottom',
+    };
+
+    if (config?.enlace) {
+      this.snackBar.open(mensaje, 'Ver promoción', defaultConfig);
+    } else {
+      this.snackBar.open(mensaje, 'Cerrar', defaultConfig);
+    }
+  }
+
+  private obtenerClasePorTipo(tipo: 'exito' | 'error' | 'info'): string[] {
+    switch (tipo) {
+      case 'exito':
+        return ['snackbar-exito'];
+      case 'error':
+        return ['snackbar-error'];
+      case 'info':
+        return ['snackbar-info'];
+      default:
+        return [''];
+    }
+  }
+}
+## Ejemplo de Uso para promociones !!!
+Con este enfoque, si pasas un enlace, el botón de acción cambiará a "Ver promoción" y cuando el usuario haga clic, la notificación se cerrará automáticamente, pero tú tendrías que manejar el evento de clic en tu componente, ya que el servicio solo se encargará de abrir el SnackBar.
+
+TypeScript
+
+    // En tu componente o clase
+    this.snackBarService.mostrarMensaje(
+      '¡Nueva oferta exclusiva para ti!',
+      'info',
+      {
+        duracion: 8000,
+        enlace: 'https://tusitio.com/promociones'
+      }
+    );
