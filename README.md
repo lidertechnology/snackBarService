@@ -94,7 +94,7 @@ TypeScript
 
 
 
-    No deberías reemplazar el botón de cierre por un enlace, ya que eso rompería la consistencia. Un botón de SnackBar siempre debe ser para una acción relacionada con la notificación, como cerrarla o revertir una acción.
+No deberías reemplazar el botón de cierre por un enlace, ya que eso rompería la consistencia. Un botón de SnackBar siempre debe ser para una acción relacionada con la notificación, como cerrarla o revertir una acción.
 
 Para manejar un enlace, la forma correcta es usar el tercer argumento de open(), el cual acepta un enlace.
 
@@ -108,53 +108,55 @@ Para hacerlo de manera genérica, modifica tu SnackBarService para que el métod
 
 TypeScript
 
-// src/app/lidertech-lib-central/services/snack-bar.service.ts
-import { Injectable, inject } from '@angular/core';
-import { MatSnackBar, MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-
-@Injectable({
-  providedIn: 'root',
-})
-export class SnackBarService {
-  private readonly snackBar = inject(MatSnackBar);
-
-  public mostrarMensaje(
-    mensaje: string,
-    tipo: 'exito' | 'error' | 'info' = 'info',
-    config?: {
-      duracion?: number;
-      posicionHorizontal?: MatSnackBarHorizontalPosition;
-      posicionVertical?: MatSnackBarVerticalPosition;
-      enlace?: string;
+    // src/app/lidertech-lib-central/services/snack-bar.service.ts
+    import { Injectable, inject } from '@angular/core';
+    import { MatSnackBar, MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+    
+    @Injectable({
+      providedIn: 'root',
+    })
+    export class SnackBarService {
+      private readonly snackBar = inject(MatSnackBar);
+    
+      public mostrarMensaje(
+        mensaje: string,
+        tipo: 'exito' | 'error' | 'info' = 'info',
+        config?: {
+          duracion?: number;
+          posicionHorizontal?: MatSnackBarHorizontalPosition;
+          posicionVertical?: MatSnackBarVerticalPosition;
+          enlace?: string;
+        }
+      ): void {
+        const defaultConfig: MatSnackBarConfig = {
+          duration: config?.duracion || 3000,
+          panelClass: this.obtenerClasePorTipo(tipo),
+          horizontalPosition: config?.posicionHorizontal || 'center',
+          verticalPosition: config?.posicionVertical || 'bottom',
+        };
+    
+        if (config?.enlace) {
+          this.snackBar.open(mensaje, 'Ver promoción', defaultConfig);
+        } else {
+          this.snackBar.open(mensaje, 'Cerrar', defaultConfig);
+        }
+      }
+    
+      private obtenerClasePorTipo(tipo: 'exito' | 'error' | 'info'): string[] {
+        switch (tipo) {
+          case 'exito':
+            return ['snackbar-exito'];
+          case 'error':
+            return ['snackbar-error'];
+          case 'info':
+            return ['snackbar-info'];
+          default:
+            return [''];
+        }
+      }
     }
-  ): void {
-    const defaultConfig: MatSnackBarConfig = {
-      duration: config?.duracion || 3000,
-      panelClass: this.obtenerClasePorTipo(tipo),
-      horizontalPosition: config?.posicionHorizontal || 'center',
-      verticalPosition: config?.posicionVertical || 'bottom',
-    };
 
-    if (config?.enlace) {
-      this.snackBar.open(mensaje, 'Ver promoción', defaultConfig);
-    } else {
-      this.snackBar.open(mensaje, 'Cerrar', defaultConfig);
-    }
-  }
-
-  private obtenerClasePorTipo(tipo: 'exito' | 'error' | 'info'): string[] {
-    switch (tipo) {
-      case 'exito':
-        return ['snackbar-exito'];
-      case 'error':
-        return ['snackbar-error'];
-      case 'info':
-        return ['snackbar-info'];
-      default:
-        return [''];
-    }
-  }
-}
+    
 ## Ejemplo de Uso para promociones !!!
 Con este enfoque, si pasas un enlace, el botón de acción cambiará a "Ver promoción" y cuando el usuario haga clic, la notificación se cerrará automáticamente, pero tú tendrías que manejar el evento de clic en tu componente, ya que el servicio solo se encargará de abrir el SnackBar.
 
