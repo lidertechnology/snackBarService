@@ -57,8 +57,10 @@ TypeScript
 
         // Mensaje de éxito simple con la configuración predeterminada
         this.snackBarService.mostrarMensaje('¡Datos guardados exitosamente!', 'exito');
-        Ejemplo 2: Mensaje de Error Personalizado
-        Aquí se muestra cómo personalizar la duración de la notificación para que el usuario tenga más tiempo para leer el error.
+
+        
+# Ejemplo 2: Mensaje de Error Personalizado
+ Aquí se muestra cómo personalizar la duración de la notificación para que el usuario tenga más tiempo para leer el error.
         
         TypeScript
         
